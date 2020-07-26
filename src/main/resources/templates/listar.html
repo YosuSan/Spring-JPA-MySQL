@@ -38,7 +38,7 @@
 					</thead>
 					<tbody>
 						<tr th:each="cliente: ${clientes}" th:object="${cliente}">
-							<th class="bg-primary" th:text="${cliente.id}"></th>
+							<th ><a class="btn btn-primary btn-xs" th:href="@{/ver/} + *{id}" th:text="*{id}"></a></th>
 							<th th:text="*{nombre}"></th>
 							<th th:text="*{apellido}"></th>
 							<th th:text="*{email}"></th>
@@ -51,6 +51,7 @@
 						</tr>
 					</tbody>
 				</table>
+				<nav th:replace="paginator-nav :: paginator"></nav>
 			</div>
 
 		</div>
