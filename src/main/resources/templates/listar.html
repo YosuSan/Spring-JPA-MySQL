@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head"></head>
+<body>
+	<header th:replace="layout/layout :: header"></header>
+
+	<div class="container-fluid py-4">
+
+		<div class="card">
+
+			<div class="card-header">
+				<div class="card-title alert alert-info text-center">
+					<h3 th:text="${title} + '. Total clientes: ' + ${count}"></h3>
+				</div>
+				<div class="alert alert-success text-center" th:if="${success}"
+					th:text="${success}"></div>
+				<div class="alert alert-danger text-center" th:if="${error}"
+					th:text="${error}"></div>
+				<div class="alert alert-warning text-center" th:if="${warning}"
+					th:text="${warning}"></div>
+				<div class="alert alert-info text-center" th:if="${info}"
+					th:text="${info}"></div>
+			</div>
+
+			<div class="card-body">
+
+				<table class="table table-dark table-hover">
+					<thead class="thead-inverse">
+						<tr>
+							<th>ID</th>
+							<th>Nombre</th>
+							<th>Apellido</th>
+							<th>Email</th>
+							<th>Fecha</th>
+							<th>Editar</th>
+							<th>Eliminar</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="cliente: ${clientes}" th:object="${cliente}">
+							<th class="bg-primary" th:text="${cliente.id}"></th>
+							<th th:text="*{nombre}"></th>
+							<th th:text="*{apellido}"></th>
+							<th th:text="*{email}"></th>
+							<th th:text="*{createAt}"></th>
+							<th><a class="btn btn-primary btn-sm"
+								th:href="@{/form/} + *{id}" th:text="Editar"></a></th>
+							<th><a class="btn btn-danger btn-sm"
+								th:href="@{/eliminar/} + *{id}" th:text="Eliminar"
+								onclick="return confirm('Seguro de querer eliminar a ese cliente');"></a></th>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+		</div>
+
+	</div>
+
+	<footer th:replace="layout/layout :: footer"></footer>
+</body>
+</html>
