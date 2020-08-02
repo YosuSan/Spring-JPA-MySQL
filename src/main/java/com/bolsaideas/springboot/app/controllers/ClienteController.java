@@ -1,17 +1,17 @@
 package com.bolsaideas.springboot.app.controllers;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
+import java.net.MalformedURLException;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -27,6 +27,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.bolsaideas.springboot.app.models.entity.Cliente;
 import com.bolsaideas.springboot.app.models.service.IClienteService;
+import com.bolsaideas.springboot.app.models.service.IUploadFileService;
 import com.bolsaideas.springboot.app.util.paginator.PageRender;
 
 @Controller
@@ -36,6 +37,24 @@ public class ClienteController {
 	@Autowired
 	@Qualifier("clienteService")
 	private IClienteService clienteService;
+
+	@Autowired
+	@Qualifier("uploadFileService")
+	private IUploadFileService uploadFileService;
+
+	@GetMapping("/uploads/{filename:.+}")
+	public ResponseEntity<Resource> verFoto(@PathVariable String filename) {
+
+		Resource recurso = null;
+		try {
+			recurso = uploadFileService.load(filename);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		return ResponseEntity.ok()
+				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + recurso.getFilename() + "\"")
+				.body(recurso);
+	}
 
 	@GetMapping("/ver/{id}")
 	public String ver(@PathVariable(value = "id") Long id, Model model, RedirectAttributes flash) {
@@ -74,7 +93,7 @@ public class ClienteController {
 		model.addAttribute("title", "Formulario creacion cliente");
 		model.addAttribute("cliente", cliente);
 
-		return "/form";
+		return "form";
 	}
 
 	@GetMapping(value = "/form/{id}")
@@ -93,7 +112,7 @@ public class ClienteController {
 
 		model.addAttribute("cliente", cliente);
 		model.addAttribute("title", "Editar cliente");
-		return "/form";
+		return "form";
 	}
 
 	@RequestMapping(value = "/form", method = RequestMethod.POST)
@@ -105,21 +124,24 @@ public class ClienteController {
 			return "form";
 		}
 
-		if (!foto.isEmpty()) {
-			Path dir = Paths.get("src\\main\\resources\\static\\uploads");
-			String rootPath = dir.toFile().getAbsolutePath();
-			try {
-				byte[] bytes = foto.getBytes();
-				Path rutaCompleta = Paths.get(rootPath + "\\" + foto.getOriginalFilename());
-				Files.write(rutaCompleta, bytes);
-				flash.addFlashAttribute("info", "Archivo subido correctamente: '" + foto.getOriginalFilename() + "'");
+		if (cliente.getId() != null && cliente.getFoto() != null && cliente.getFoto().length() > 0)
+			uploadFileService.delete(cliente.getFoto());
 
-				cliente.setFoto(foto.getOriginalFilename());
+		if (!foto.isEmpty()) {
+
+			String uniqueFileName = null;
+			try {
+				uniqueFileName = uploadFileService.copy(foto);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 
-		}
+			flash.addFlashAttribute("info", "Archivo subido correctamente: '" + foto.getOriginalFilename() + "'");
+
+			cliente.setFoto(uniqueFileName);
+
+		} else
+			cliente.setFoto("");
 
 		String mensaje = (cliente.getId() == null) ? "Cliente guardado con éxito" : "Cliente editado con éxito";
 
@@ -133,8 +155,12 @@ public class ClienteController {
 	public String eliminar(@PathVariable(value = "id") Long id, RedirectAttributes flash) {
 
 		if (id > 0) {
+			Cliente cliente = clienteService.findOne(id);
 			clienteService.delete(id);
 			flash.addFlashAttribute("success", "Cliente eliminado con éxito");
+
+			if (uploadFileService.delete(cliente.getFoto()))
+				flash.addFlashAttribute("info", "Foto del cliente eliminada con éxito");
 		}
 
 		return "redirect:/listar";

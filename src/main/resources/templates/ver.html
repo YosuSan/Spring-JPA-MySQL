@@ -15,14 +15,14 @@
 			</div>
 
 			<div class="card-body">
-				<img th:if="${#strings.length(cliente.foto) > 0}" class="imgthumbnail rounded float-left" style="max-width: 25%"
+				<img th:if="${#strings.length(cliente.foto) > 0}" class="imgthumbnail rounded float-left mr-1" style="max-width: 25%"
 					th:src="@{'/uploads/' + ${cliente.foto}}" th:alt="${cliente.foto}">
 
 				<ul class="list-group">
-					<li class="list-group-item" th:text="${cliente.nombre}"></li>
-					<li class="list-group-item" th:text="${cliente.apellido}"></li>
-					<li class="list-group-item" th:text="${cliente.email}"></li>
-					<li class="list-group-item" th:text="${cliente.createAt}"></li>
+					<li class="list-group-item bg-dark text-light text-center"><span th:text="'Nombre: '"></span><span th:text="${cliente.nombre}"></span></li>
+					<li class="list-group-item"><span th:text="'Apellido: '"></span><span th:text="${cliente.apellido}"></span></li>
+					<li class="list-group-item"><span th:text="'Email: '"></span><span th:text="${cliente.email}"></span></li>
+					<li class="list-group-item"><span th:text="'Fecha: '"></span><span th:text="${cliente.createAt}"></span></li>
 
 				</ul>
 
