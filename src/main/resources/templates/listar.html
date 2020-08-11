@@ -32,22 +32,24 @@
 							<th>Apellido</th>
 							<th>Email</th>
 							<th>Fecha</th>
+							<th>Crear factura</th>
 							<th>Editar</th>
 							<th>Eliminar</th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr th:each="cliente: ${clientes}" th:object="${cliente}">
-							<th ><a class="btn btn-primary btn-xs" th:href="@{/ver/} + *{id}" th:text="*{id}"></a></th>
-							<th th:text="*{nombre}"></th>
-							<th th:text="*{apellido}"></th>
-							<th th:text="*{email}"></th>
-							<th th:text="*{createAt}"></th>
-							<th><a class="btn btn-primary btn-sm"
-								th:href="@{/form/} + *{id}" th:text="Editar"></a></th>
-							<th><a class="btn btn-danger btn-sm"
+							<td ><a class="btn btn-primary btn-xs" th:href="@{/ver/} + *{id}" th:text="*{id}"></a></td>
+							<td th:text="*{nombre}"></td>
+							<td th:text="*{apellido}"></td>
+							<td th:text="*{email}"></td>
+							<td th:text="*{createAt}"></td>
+							<td><a class="btn btn-success btn-sm" th:href="@{/factura/form/} + *{id}" th:text="'Crear Factura'"></a></td>
+							<td><a class="btn btn-primary btn-sm"
+								th:href="@{/form/} + *{id}" th:text="Editar"></a></td>
+							<td><a class="btn btn-danger btn-sm"
 								th:href="@{/eliminar/} + *{id}" th:text="Eliminar"
-								onclick="return confirm('Seguro de querer eliminar a ese cliente');"></a></th>
+								onclick="return confirm('Seguro de querer eliminar a ese cliente');"></a></td>
 						</tr>
 					</tbody>
 				</table>
