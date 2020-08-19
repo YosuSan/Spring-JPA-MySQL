@@ -2,8 +2,13 @@ package com.bolsaideas.springboot.app.controllers;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Collection;
+
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
@@ -12,6 +17,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -34,6 +46,8 @@ import com.bolsaideas.springboot.app.util.paginator.PageRender;
 @SessionAttributes({ "cliente" })
 public class ClienteController {
 
+	protected final Log logger = LogFactory.getLog(this.getClass());
+
 	@Autowired
 	@Qualifier("clienteService")
 	private IClienteService clienteService;
@@ -42,6 +56,7 @@ public class ClienteController {
 	@Qualifier("uploadFileService")
 	private IUploadFileService uploadFileService;
 
+	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN', 'ROLE_OTRO')")
 	@GetMapping("/uploads/{filename:.+}")
 	public ResponseEntity<Resource> verFoto(@PathVariable String filename) {
 
@@ -56,12 +71,14 @@ public class ClienteController {
 				.body(recurso);
 	}
 
+	
+	@Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_OTRO" })
 	@GetMapping("/ver/{id}")
 	public String ver(@PathVariable(value = "id") Long id, Model model, RedirectAttributes flash) {
 
 //		Cliente cliente = clienteService.findOne(id);
 		Cliente cliente = clienteService.fetchByIdWithFacturas(id);
-		
+
 		if (cliente == null) {
 			flash.addFlashAttribute("error", "El cliente no existe en la BBDD");
 			return "redirect:/listar";
@@ -73,7 +90,43 @@ public class ClienteController {
 	}
 
 	@RequestMapping(value = { "/listar", "/" }, method = RequestMethod.GET)
-	public String listar(@RequestParam(name = "page", defaultValue = "0") int page, Model model) {
+	public String listar(@RequestParam(name = "page", defaultValue = "0") int page, Model model,
+			Authentication authentication, HttpServletRequest request) {
+
+		if (authentication != null) {
+			logger.info("Hola usuario autenticado: ".concat(authentication.getName()));
+		}
+
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+		if (auth != null) {
+			logger.info("==> Utilizando una forma estática. Hola usuario autenticado: ".concat(auth.getName()));
+		}
+		/****************************************************************************************************************************************/
+		if (hasRole("ROLE_ADMIN"))
+			logger.info("Hola ".concat(auth.getName()).concat(" tienes acceso"));
+		else
+			logger.info("Hola ".concat(auth.getName()).concat(" no tienes acceso"));
+		/****************************************************************************************************************************************/
+		SecurityContextHolderAwareRequestWrapper securityContext = new SecurityContextHolderAwareRequestWrapper(request,
+				"ROLE_");
+
+		if (securityContext.isUserInRole("ADMIN"))
+			logger.info("Forma usando la clase SecurityContextHolderAwareRequestWrapper Hola ".concat(auth.getName())
+					.concat(" tienes acceso"));
+		else
+			logger.info("Forma usando la clase SecurityContextHolderAwareRequestWrapper Hola ".concat(auth.getName())
+					.concat(" no tienes acceso"));
+
+		/****************************************************************************************************************************************/
+		if (request.isUserInRole("ROLE_ADMIN"))
+			logger.info(
+					"Forma usando la clase HttpServletRequest Hola ".concat(auth.getName()).concat(" tienes acceso"));
+		else
+			logger.info("Forma usando la clase HttpServletRequest Hola ".concat(auth.getName())
+					.concat(" no tienes acceso"));
+
+		/****************************************************************************************************************************************/
 
 		Pageable pageRequest = PageRequest.of(page, 5);
 		Page<Cliente> clientes = clienteService.findAll(pageRequest);
@@ -88,6 +141,7 @@ public class ClienteController {
 		return "listar";
 	}
 
+	@Secured({ "ROLE_ADMIN" })
 	@GetMapping("/form")
 	public String crear(Model model) {
 		Cliente cliente = new Cliente();
@@ -98,6 +152,7 @@ public class ClienteController {
 		return "form";
 	}
 
+	@Secured("ROLE_ADMIN")
 	@GetMapping(value = "/form/{id}")
 	public String editar(@PathVariable(value = "id") Long id, Model model, RedirectAttributes flash) {
 		Cliente cliente = null;
@@ -153,6 +208,7 @@ public class ClienteController {
 		return "redirect:listar";
 	}
 
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/eliminar/{id}")
 	public String eliminar(@PathVariable(value = "id") Long id, RedirectAttributes flash) {
 
@@ -166,6 +222,26 @@ public class ClienteController {
 		}
 
 		return "redirect:/listar";
+	}
+
+	private boolean hasRole(String role) {
+
+		SecurityContext context = SecurityContextHolder.getContext();
+
+		if (context == null)
+			return false;
+
+		Authentication auth = context.getAuthentication();
+
+		if (auth == null)
+			return false;
+
+		Collection<? extends GrantedAuthority> authorities = auth.getAuthorities();
+
+		return authorities.stream().filter(x -> x.getAuthority().equals(role)).findAny().isPresent();
+
+//		return authorities.contains(new SimpleGrantedAuthority(role));
+
 	}
 
 }

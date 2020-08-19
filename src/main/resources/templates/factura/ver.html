@@ -11,8 +11,6 @@
 
 			<div class="card-body">
 
-
-
 				<h4 class="card-title">
 					<a th:href="@{'/ver/' + ${factura.cliente.id}}"
 						class="btn btn-secondary btn-sm">&laquo; Volver</a>
@@ -28,7 +26,8 @@
 				<ul class="list-group">
 					<li class="list-group-item list-group-item-success"
 						th:text="'Datos de la factura'"></li>
-					<li class="list-group-item" th:text="'Número de factura: ' + ${factura.id}"></li>
+					<li class="list-group-item"
+						th:text="'Número de factura: ' + ${factura.id}"></li>
 					<li class="list-group-item"
 						th:text="'Descripción: ' + ${factura.descripcion}"></li>
 					<li class="list-group-item"

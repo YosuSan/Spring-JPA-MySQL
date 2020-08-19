@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http:www.thymeleaf.org/extras/spring-security">
 
 <head th:fragment="head">
 <meta charset="UTF-8">
@@ -7,6 +8,7 @@
 <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
 <link rel="stylesheet" th:href="@{/css/sticky-footer.css}">
 <link rel="stylesheet" th:href="@{/css/jquery-ui.min.css}">
+
 </head>
 
 <body>
@@ -21,31 +23,80 @@
 				<span class="navbar-toggler-icon"></span>
 			</button>
 			<div class="collapse navbar-collapse" id="navbarNav">
-				<ul class="navbar-nav">
+				<ul class="navbar-nav mr-auto">
 					<li class="nav-item"><a class="nav-link" th:href="@{/}">Home
 					</a></li>
 					<li class="nav-item"><a class="nav-link" th:href="@{/listar}">Clientes</a>
 					</li>
-					<li class="nav-item"><a class="nav-link" th:href="@{/form}">Formulario</a>
-					</li>
+					<li class="nav-item" sec:authorize="hasRole('ROLE_ADMIN')"><a
+						class="nav-link" th:href="@{/form}">Formulario</a></li>
+				</ul>
+				<ul class="navbar-nav">
+					<li class="navbar-item p-2" sec:authorize="!isAuthenticated()"><a
+						class="btn btn-outline-primary" th:href="@{/login}">Sign In</a></li>
+
+					<li class="dropdown dropleft p-2" sec:authorize="isAuthenticated()"><button
+							class="btn btn-outline-primary dropdown-toggle" role="button"
+							id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true"
+							aria-expanded="false">
+							<span sec:authentication="name"></span>
+						</button>
+
+						<div class="dropdown-menu">
+							<form id="logoutForm" th:action="@{/logout}" method="POST">
+								<button class="dropdown-item py-1" type="submit"
+									th:text="'Log out'"></button>
+								<button class="dropdown-item py-1"
+									onclick="document.getElementById('logoutForm').submit();"
+									th:text="'Log out 2'"></button>
+							</form>
+
+
+						</div></li>
 				</ul>
 			</div>
-		</nav>		
-	</header>
-
-	<footer th:fragment="footer" class="footer bg-secondary">
-		<div class="row">
-			<img class="float-left col-sm-1" th:src="@{/images/logo.png}"
-				style="with: 60px; height: 60px;" />
-			<h3 class="text-center mx-auto" th:text="'Footer desde layout'"></h3>
-			<img class="float-right col-sm-1" th:src="@{/images/logo.png}"
-				style="with: 60px; height: 60px;" />
+		</nav>
+		<div id="alerts">
+			<div class="alert alert-success text-center" th:if="${success}"
+				th:text="${success}"></div>
+			<div class="alert alert-danger text-center" th:if="${error}"
+				th:text="${error}"></div>
+			<div class="alert alert-warning text-center" th:if="${warning}"
+				th:text="${warning}"></div>
+			<div class="alert alert-info text-center" th:if="${info}"
+				th:text="${info}"></div>
 		</div>
 
+	</header>
+
+	<footer th:fragment="footer" class="footer bg-secondary" id="footer">
+		<div class="row">
+
+			<img class="float-left col-sm-1" th:src="@{/images/logo.png}"
+				style="height: 60px;" />
+			<h5 class="text-center mx-auto" sec:authorize="isAuthenticated()">
+				Usuario: <span sec:authentication="name"></span> | Roles: <span
+					sec:authentication="principal.authorities"></span>
+			</h5>
+			<h5 class="text-center mx-auto" sec:authorize="!isAuthenticated()">Sin
+				usuario</h5>
+			<img class="float-right col-sm-1" th:src="@{/images/logo.png}"
+				style="height: 60px;" />
+
+		</div>
+		<!--********************* El orden importa *********************-->
 		<script th:src="@{/js/jquery-3.5.1.min.js}"></script>
 		<script th:src="@{/js/jquery-ui.min.js}"></script>
 		<script th:src="@{/js/popper.min.js}"></script>
 		<script th:src="@{/js/bootstrap.min.js}"></script>
+
+		<script type="text/javascript">
+			$(document).ready(function() {
+				setTimeout(function() {
+					$("#alerts").fadeOut(1500);
+				}, 3000);
+			});
+		</script>
 
 	</footer>
 

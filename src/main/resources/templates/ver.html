@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="layout/layout :: head"></head>
 <body>
 	<header th:replace="layout/layout :: header"></header>
@@ -11,19 +12,12 @@
 			<div class="card-header">
 				<div class="card-title alert alert-info text-center">
 					<h3 th:text="${title}"></h3>
-					<div class="alert alert-success text-center" th:if="${success}"
-						th:text="${success}"></div>
-					<div class="alert alert-danger text-center" th:if="${error}"
-						th:text="${error}"></div>
-					<div class="alert alert-warning text-center" th:if="${warning}"
-						th:text="${warning}"></div>
-					<div class="alert alert-info text-center" th:if="${info}"
-						th:text="${info}"></div>
 				</div>
 			</div>
 
 			<div class="card-body">
-				<h4 class="card-title text-center">
+				<h4 sec:authorize="hasRole('ROLE_ADMIN')"
+					class="card-title text-center">
 					<a class="btn btn-success"
 						th:href="@{/factura/form/} + ${cliente.id}"
 						th:text="'Crear Factura'"></a>
@@ -54,8 +48,8 @@
 							<th>Descripción</th>
 							<th>Fecha</th>
 							<th>Total</th>
-							<th>Ver</th>
-							<th>Eliminar</th>
+							<th sec:authorize="hasRole('ROLE_ADMIN')">Ver</th>
+							<th sec:authorize="hasRole('ROLE_ADMIN')">Eliminar</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -64,9 +58,11 @@
 							<td th:text="${factura.descripcion}"></td>
 							<td th:text="${factura.createAt}"></td>
 							<td th:text="${factura.total}"></td>
-							<td><a class="btn btn-primary btn-sm"
+							<td sec:authorize="hasRole('ROLE_ADMIN')"><a
+								class="btn btn-primary btn-sm"
 								th:href="@{'/factura/ver/' + ${factura.id}}" th:text="Detalle"></a></td>
-							<td><a class="btn btn-danger btn-sm"
+							<td sec:authorize="hasRole('ROLE_ADMIN')"><a
+								class="btn btn-danger btn-sm"
 								th:href="@{'/factura/eliminar/' + ${factura.id}}"
 								th:text="Eliminar"
 								onclick="return confirm('¿Estás seguro de eliminar la factura');"></a></td>
