@@ -5,7 +5,7 @@
 
 		<ul class="pagination">
 			<li th:if="${not page.first}" class="page-item"><a
-				class="page-link" th:href="@{${page.url}(page=0)}">Primera</a></li>
+				class="page-link" th:href="@{${page.url}(page=0)}" th:text="#{text.paginator.first}">Primera</a></li>
 
 			<li th:if="${not page.first}"
 				th:class="${page.hasPrevious? 'page-item' : 'page-item disabled'}">
@@ -31,7 +31,7 @@
 
 			<li th:if="${not page.last}" class="page-item"><a
 				class="page-link"
-				th:href="@{${page.url}(page=${page.totalPaginas-1})}">Última</a></li>
+				th:href="@{${page.url}(page=${page.totalPaginas-1})}" th:text="#{text.paginator.last}">Última</a></li>
 
 		</ul>
 

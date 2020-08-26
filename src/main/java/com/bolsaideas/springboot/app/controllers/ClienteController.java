@@ -3,6 +3,7 @@ package com.bolsaideas.springboot.app.controllers;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Collection;
+import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -11,6 +12,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.MessageSource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -55,6 +57,9 @@ public class ClienteController {
 	@Autowired
 	@Qualifier("uploadFileService")
 	private IUploadFileService uploadFileService;
+	
+	@Autowired
+	private MessageSource messageSource;
 
 	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN', 'ROLE_OTRO')")
 	@GetMapping("/uploads/{filename:.+}")
@@ -91,7 +96,7 @@ public class ClienteController {
 
 	@RequestMapping(value = { "/listar", "/" }, method = RequestMethod.GET)
 	public String listar(@RequestParam(name = "page", defaultValue = "0") int page, Model model,
-			Authentication authentication, HttpServletRequest request) {
+			Authentication authentication, HttpServletRequest request, Locale locale) {
 
 		if (authentication != null) {
 			logger.info("Hola usuario autenticado: ".concat(authentication.getName()));
@@ -133,7 +138,7 @@ public class ClienteController {
 
 		PageRender<Cliente> pageRender = new PageRender<>("/listar", clientes);
 
-		model.addAttribute("title", "Listado de clientes");
+		model.addAttribute("title", messageSource.getMessage("text.cliente.listar.titulo", null,  locale));
 		model.addAttribute("clientes", clientes);
 		model.addAttribute("count", clienteService.count());
 		model.addAttribute("page", pageRender);

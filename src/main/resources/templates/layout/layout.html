@@ -24,12 +24,12 @@
 			</button>
 			<div class="collapse navbar-collapse" id="navbarNav">
 				<ul class="navbar-nav mr-auto">
-					<li class="nav-item"><a class="nav-link" th:href="@{/}">Home
+					<li class="nav-item"><a class="nav-link" th:href="@{/}" th:text="#{text.header.home}">Home
 					</a></li>
-					<li class="nav-item"><a class="nav-link" th:href="@{/listar}">Clientes</a>
+					<li class="nav-item"><a class="nav-link" th:href="@{/listar}" th:text="#{text.customer}">Clientes</a>
 					</li>
 					<li class="nav-item" sec:authorize="hasRole('ROLE_ADMIN')"><a
-						class="nav-link" th:href="@{/form}">Formulario</a></li>
+						class="nav-link" th:href="@{/form}" th:text="#{text.header.form}">Formulario</a></li>
 				</ul>
 				<ul class="navbar-nav">
 					<li class="navbar-item p-2" sec:authorize="!isAuthenticated()"><a
@@ -51,8 +51,27 @@
 									th:text="'Log out 2'"></button>
 							</form>
 
-
 						</div></li>
+				</ul>
+				<ul class="navbar-nav navbar-right mx-4">
+					<li class="nav-item mx-1"><a class="btn btn-outline-success"
+						th:href="@{/locale(lang=es_ES)}">ES</a></li>
+					<li class="nav-item mx-1"><a class="btn btn-outline-success"
+						th:href="@{/locale(lang=en_US)}">EN</a></li>
+					<li class="nav-item mx-1"><a class="btn btn-outline-success"
+						th:href="@{/locale(lang=de_DE)}">DE</a></li>
+					<li class="dropdown show nav-item mx-2"><button
+							class="btn btn-outline-primary dropdown-toggle" role="button"
+							id="dropdownLenguaje" data-toggle="dropdown" aria-haspopup="true"
+							aria-expanded="false">
+							<span th:text="#{text.locale.language}"></span>
+						</button>
+						<div class="dropdown-menu">
+							<a class="dropdown-item" th:href="@{/locale(lang=es_ES)}" th:text="#{text.locale.es}">ES</a>
+							<a class="dropdown-item" th:href="@{/locale(lang=en_US)}" th:text="#{text.locale.en}">EN</a>
+							<a class="dropdown-item" th:href="@{/locale(lang=de_DE)}" th:text="#{text.locale.de}">DE</a>
+						</div>
+					</li>
 				</ul>
 			</div>
 		</nav>

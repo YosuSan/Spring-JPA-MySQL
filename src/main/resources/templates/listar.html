@@ -20,14 +20,14 @@
 					<thead class="thead-inverse">
 						<tr>
 							<th>ID</th>
-							<th>Nombre</th>
-							<th>Apellido</th>
-							<th>Email</th>
-							<th>Fecha</th>
-							<th sec:authorize="hasRole('ROLE_ADMIN')">Crear factura</th>
-							<th sec:authorize="hasRole('ROLE_USER')">Detalles</th>
-							<th sec:authorize="hasRole('ROLE_ADMIN')">Editar</th>
-							<th sec:authorize="hasRole('ROLE_ADMIN')">Eliminar</th>
+							<th th:text="#{text.cliente.nombre}">Nombre</th>
+							<th th:text="#{text.cliente.apellido}">Apellido</th>
+							<th th:text="#{text.cliente.email}">Email</th>
+							<th th:text="#{text.cliente.createAt}">Fecha</th>
+							<th sec:authorize="hasRole('ROLE_ADMIN')" th:text="#{text.cliente.createBill}">Crear factura</th>
+							<th sec:authorize="hasRole('ROLE_USER')" th:text="#{text.cliente.details}">Detalles</th>
+							<th sec:authorize="hasRole('ROLE_ADMIN')" th:text="#{text.cliente.edit}">Editar</th>
+							<th sec:authorize="hasRole('ROLE_ADMIN')" th:text="#{text.cliente.delete}">Eliminar</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -39,16 +39,16 @@
 							<td th:text="*{createAt}"></td>
 							<td sec:authorize="hasRole('ROLE_ADMIN')"><a
 								class="btn btn-success btn-sm"
-								th:href="@{/factura/form/} + *{id}" th:text="'Crear Factura'"></a></td>
+								th:href="@{/factura/form/} + *{id}" th:text="#{text.cliente.createBill}"></a></td>
 							<td sec:authorize="hasRole('ROLE_USER')"><a
 								class="btn btn-primary btn-xs" th:href="@{/ver/} + *{id}"
-								th:text="'Detalles'"></a></td>
+								th:text="#{text.cliente.details}"></a></td>
 							<td sec:authorize="hasRole('ROLE_ADMIN')"><a
 								class="btn btn-primary btn-sm" th:href="@{/form/} + *{id}"
-								th:text="Editar"></a></td>
+								th:text="#{text.cliente.edit}"></a></td>
 							<td sec:authorize="hasRole('ROLE_ADMIN')"><a
 								class="btn btn-danger btn-sm" th:href="@{/eliminar/} + *{id}"
-								th:text="Eliminar"
+								th:text="#{text.cliente.delete}"
 								onclick="return confirm('Seguro de querer eliminar a ese cliente');"></a></td>
 						</tr>
 					</tbody>
