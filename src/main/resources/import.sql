@@ -22,7 +22,7 @@ INSERT INTO productos (nombre, precio, create_at) VALUES('Apple ipod chungo', '3
 INSERT INTO productos (nombre, precio, create_at) VALUES('Sony notebook 14', '650', NOW());
 INSERT INTO productos (nombre, precio, create_at) VALUES('Multifuncion HP', '98', NOW());
 INSERT INTO productos (nombre, precio, create_at) VALUES('Bicicleta con ruedas', '1250', NOW());
-INSERT INTO productos (nombre, precio, create_at) VALUES('Cómoda con 86 cajones', '369852', NOW());
+INSERT INTO productos (nombre, precio, create_at) VALUES('Cómoda con 86 cajones', '369', NOW());
 
 
 INSERT INTO facturas (descripcion, observaciones, cliente_id, create_at) VALUES('Factura equipos oficina', null, '1', NOW());

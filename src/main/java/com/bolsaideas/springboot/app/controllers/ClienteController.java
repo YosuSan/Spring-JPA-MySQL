@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.multipart.MultipartFile;
@@ -43,6 +44,7 @@ import com.bolsaideas.springboot.app.models.entity.Cliente;
 import com.bolsaideas.springboot.app.models.service.IClienteService;
 import com.bolsaideas.springboot.app.models.service.IUploadFileService;
 import com.bolsaideas.springboot.app.util.paginator.PageRender;
+import com.bolsaideas.springboot.app.view.xml.ClienteList;
 
 @Controller
 @SessionAttributes({ "cliente" })
@@ -57,7 +59,7 @@ public class ClienteController {
 	@Autowired
 	@Qualifier("uploadFileService")
 	private IUploadFileService uploadFileService;
-	
+
 	@Autowired
 	private MessageSource messageSource;
 
@@ -76,7 +78,6 @@ public class ClienteController {
 				.body(recurso);
 	}
 
-	
 	@Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_OTRO" })
 	@GetMapping("/ver/{id}")
 	public String ver(@PathVariable(value = "id") Long id, Model model, RedirectAttributes flash) {
@@ -92,6 +93,13 @@ public class ClienteController {
 		model.addAttribute("title", "Detalles del cliente: " + cliente.getNombre());
 
 		return "ver";
+	}
+
+	@GetMapping(value = "/listar-rest")
+	public @ResponseBody ClienteList listarRest() {
+		/* Peticion Rest donde devuelve la lista de los clientes por 
+		 * defecto xml, usar "/list-rest?format=json" para obtener el json */
+		return new ClienteList(clienteService.findAll());
 	}
 
 	@RequestMapping(value = { "/listar", "/" }, method = RequestMethod.GET)
@@ -138,7 +146,7 @@ public class ClienteController {
 
 		PageRender<Cliente> pageRender = new PageRender<>("/listar", clientes);
 
-		model.addAttribute("title", messageSource.getMessage("text.cliente.listar.titulo", null,  locale));
+		model.addAttribute("title", messageSource.getMessage("text.cliente.listar.titulo", null, locale));
 		model.addAttribute("clientes", clientes);
 		model.addAttribute("count", clienteService.count());
 		model.addAttribute("page", pageRender);

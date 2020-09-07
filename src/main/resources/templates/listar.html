@@ -12,6 +12,17 @@
 			<div class="card-header">
 				<div class="card-title alert alert-info text-center"
 					th:text="${title}"></div>
+				<div sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')">
+					<div class="float-right mx-1 alert-secondary rounded-lg">
+						<strong class="mx-1" th:text="#{text.cliente.downloadList}">Descargar listado:</strong>
+						<a class="btn btn-success btn-sm mx-1" target="_blank"
+							th:href="@{'/listar/'(format=csv)}">CSV</a> <a
+							class="btn btn-info btn-sm mx-1" target="_blank"
+							th:href="@{'/listar/'(format=xml)}">XML</a><a
+							class="btn btn-warning btn-sm mx-1" target="_blank"
+							th:href="@{'/listar/'(format=json)}">JSON</a>
+					</div>
+				</div>
 			</div>
 
 			<div class="card-body">
@@ -24,10 +35,14 @@
 							<th th:text="#{text.cliente.apellido}">Apellido</th>
 							<th th:text="#{text.cliente.email}">Email</th>
 							<th th:text="#{text.cliente.createAt}">Fecha</th>
-							<th sec:authorize="hasRole('ROLE_ADMIN')" th:text="#{text.cliente.createBill}">Crear factura</th>
-							<th sec:authorize="hasRole('ROLE_USER')" th:text="#{text.cliente.details}">Detalles</th>
-							<th sec:authorize="hasRole('ROLE_ADMIN')" th:text="#{text.cliente.edit}">Editar</th>
-							<th sec:authorize="hasRole('ROLE_ADMIN')" th:text="#{text.cliente.delete}">Eliminar</th>
+							<th sec:authorize="hasRole('ROLE_ADMIN')"
+								th:text="#{text.cliente.createBill}">Crear factura</th>
+							<th sec:authorize="hasRole('ROLE_USER')"
+								th:text="#{text.cliente.details}">Detalles</th>
+							<th sec:authorize="hasRole('ROLE_ADMIN')"
+								th:text="#{text.cliente.edit}">Editar</th>
+							<th sec:authorize="hasRole('ROLE_ADMIN')"
+								th:text="#{text.cliente.delete}">Eliminar</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -39,7 +54,8 @@
 							<td th:text="*{createAt}"></td>
 							<td sec:authorize="hasRole('ROLE_ADMIN')"><a
 								class="btn btn-success btn-sm"
-								th:href="@{/factura/form/} + *{id}" th:text="#{text.cliente.createBill}"></a></td>
+								th:href="@{/factura/form/} + *{id}"
+								th:text="#{text.cliente.createBill}"></a></td>
 							<td sec:authorize="hasRole('ROLE_USER')"><a
 								class="btn btn-primary btn-xs" th:href="@{/ver/} + *{id}"
 								th:text="#{text.cliente.details}"></a></td>
